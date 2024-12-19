@@ -1,66 +1,49 @@
 <?php
-
+ini_set('display_errors',1);
+ini_set('error_reporting',1);
 
 use App\Bot;
-
-use App\User;
-
-use \App\Todo;
-
-$update = json_decode(file_get_contents('php://input'));
-$message = $update->message;
-$chatId = $message->chat->id;
-$text = $message->text;
-
-$user = new User();
-
-$bot = new Bot();
+use App\Todo;
+use  App\User;
 
 $todo = new Todo();
+$bot = new Bot();
+$user = new User();
+
+
+$update = json_decode(file_get_contents('php://input'));
+
+$chat_id = $update->message->chat->id;
+$text = $update->message->text;
+
+$callbackQuery = $update->callback_query;
+$callbackQueryId = $callbackQuery->id;
+$callbackData = $callbackQuery->data;
+$callbackUserId = $callbackQuery->from->id;
+$callbackChatId = $callbackQuery->message->chat->id;
+$callbackMessageId = $callbackQuery->message->message_id;
 
 if ($text == '/start'){
-    $text1 = "Bizning botimizni ishlatish uchun web syatdan royxatdan o'tishingiz zarur (http://localhost:8080)";
+
     $bot->makeRequest('sendMessage',[
-        'chat_id'=>$chatId,
-        'text'=>$text1
+        'chat_id'=>$chat_id,
+        'text'=>'Assalomu alykum bot hush kelibsiz'
     ]);
     exit();
 }
-if(mb_stripos($text,'/start') !== false){
+
+if (mb_stripos($text, '/start')!==false){
     $userId = explode('/start', $text)[1];
-    $user->linkTelegramId($userId, $chatId);
-
+    $user ->setTelegramId($userId, $chat_id);
     $bot->makeRequest('sendMessage',[
-        'chat_id'=>$chatId,
-        'text'=>'Todo App botiga xush kelibsiz'
+        'chat_id'=>$chat_id,
+        'text'=>'Assalomu alykum'.$userId
     ]);
     exit();
 }
 
-if ($text == '/tacks') {
-
-$tasks = $todo->getAllTodosTelegramById($chatId);
-
-if (!empty($tasks)) {
-    $responseText = "Sizning vazifalaringiz:\n\n";
-    foreach ($tasks as $index => $task) {
-        $responseText .= ($index + 1) . ". " . $task['title'] . " - " . $task['status'] . " (Muddati: " . $task['due_date'] . ")\n";
-    }
-} else {
-    $responseText = "Hozircha hech qanday vazifa yo'q.";
+if ($text =='/tasks')
+{
+    $bot->sentUserTasks($chat_id);
+    exit();
 }
-
-$bot->makeRequest('sendMessage', [
-    'chat_id' => $chatId,
-    'text' => $responseText
-]);
-
-exit();
-}
-
-
-
-
-
-
-
