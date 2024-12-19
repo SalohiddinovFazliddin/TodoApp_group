@@ -7,7 +7,7 @@ use PDO;
 
 class User
 {
-    public PDO $pdo;
+    public $pdo;
 
     public function __construct()
     {
@@ -76,14 +76,16 @@ class User
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function setTelegramId(int $id, int $telegram_id): void
+    public function linkTelegramId(int $id, int $telegramId): void
     {
         $query = "UPDATE users SET telegram_id = :telegram_id WHERE id = :id";
         $stmt = $this->pdo->prepare($query);
         $stmt->execute([
-            ':telegram_id' => $telegram_id,
-            ':id' => $id,
+            ":id" => $id,
+            ":telegram_id" => $telegramId,
         ]);
     }
 
+
 }
+
