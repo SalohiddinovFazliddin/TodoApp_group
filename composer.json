@@ -4,7 +4,8 @@
         "larapack/dd": "^1.1",
       "ext-pdo": "*",
         "guzzlehttp/guzzle": "^7.9",
-        "predis/predis": "^2.3"
+        "predis/predis": "^2.3",
+      "ext-redis": "*"
     },
     "autoload": {
         "psr-4": {
